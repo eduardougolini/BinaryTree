@@ -17,11 +17,20 @@ int readRootValue() {
     return root;
 }
 
-char readTreeValue() {
+int readNodeValue() {
+    int node;
+
+    printf("Informe o numero do no: ");
+    scanf("%d", &node);
+
+    return node;
+}
+
+char readUserChoice() {
     char treeValue;
     
     getchar();//Limpa buffer do teclado
-    printf("Informe um valor a ser adicionado a estrutura da arvore: ('d' => deletar | 'm' => mostrar | 'p' => parar)");
+    printf("Opcoes: 'i' => inserir | d' => deletar | 'm' => mostrar | 'p' => parar : ");
     scanf("%c", &treeValue);
     getchar();
 
@@ -29,12 +38,12 @@ char readTreeValue() {
 }
 
 int readValueToDelete() {
-    int value;
+    int valueToDelete;
     
     printf("Informe o valor a ser excluido: ");
-    scanf("%d", &value);
+    scanf("%d", &valueToDelete);
     
-    return value;
+    return valueToDelete;
 }
 
 void addNodeToRight(Tree *parentNode, Tree *childNode) {
@@ -80,11 +89,11 @@ void orderNode(Tree *rootNode, int treeValue) {
 
 }
 
-void deleteNodeWithTwoChilds(Tree* nodeToDelete) {
+void deleteNodeWithTwoChilds(Tree *nodeToDelete) {
     
 }
 
-void deleteNodeWithOneChild(Tree* nodeToDelete) {
+void deleteNodeWithOneChild(Tree *nodeToDelete) {
     Tree* parentNode = nodeToDelete->backPointer;
     
     if(nodeToDelete->nextPointerLeft) {
@@ -102,7 +111,7 @@ void deleteNodeWithOneChild(Tree* nodeToDelete) {
     return;
 }
 
-void checkNodeToDeleteType(Tree* nodeToDelete) {
+void checkNodeToDeleteType(Tree *nodeToDelete) {
     
     if (nodeToDelete->nextPointerLeft && nodeToDelete->nextPointerRight) {
         deleteNodeWithTwoChilds(nodeToDelete);
@@ -113,10 +122,9 @@ void checkNodeToDeleteType(Tree* nodeToDelete) {
     return;    
 }
 
-void findNodeToDelete(Tree* rootNode, int valueToDelete) {
-    
+void findNodeToDelete(Tree *rootNode, int valueToDelete) {
     Tree* selectedNode = rootNode;
-    
+        
     while (true) {
         
         if (selectedNode->nodeValue == valueToDelete) {
@@ -180,10 +188,14 @@ int main() {
     rootNode->nodeValue = readRootValue();
 
     while (true) {
-        int treeValue = readTreeValue();
-        int valueToDelete;
+        char choice = readUserChoice();
+        int nodeValue, valueToDelete;
         
-        switch (treeValue) {
+        switch (choice) {
+            case 'i':
+                nodeValue = readNodeValue();
+                orderNode(rootNode, nodeValue);
+                break;
             case 'm':
                 showInsertedValues(rootNode);
                 break;
@@ -192,15 +204,12 @@ int main() {
                 findNodeToDelete(rootNode, valueToDelete);
                 break;
             case 'p':
-                system("pause");
                 return 0;
             default:
-                int convertedReadedValue = treeValue - '0'; //Gambiarra do C para fazer parsing
-                orderNode(rootNode, convertedReadedValue);
+                return 0;
         }
 
     }
 
-    system("pause");
     return 0;
 }
