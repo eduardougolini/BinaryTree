@@ -129,6 +129,7 @@ void findNodeToDelete(Tree *rootNode, int valueToDelete) {
         
         if (selectedNode->nodeValue == valueToDelete) {
             checkNodeToDeleteType(selectedNode);
+            break;
         } else if (selectedNode->nodeValue > valueToDelete) {
             selectedNode = selectedNode->nextPointerLeft;
         } else {
