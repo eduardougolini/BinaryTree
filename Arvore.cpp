@@ -17,13 +17,24 @@ int readRootValue() {
     return root;
 }
 
-int readTreeValue() {
-    int treeValue;
-
-    printf("Informe um numero a ser adicionado a estrutura da arvore: (0 cancela execucao, 10000 mostra valores inseridos)");
-    scanf("%d", &treeValue);
+char readTreeValue() {
+    char treeValue;
+    
+    getchar();//Limpa buffer do teclado
+    printf("Informe um valor a ser adicionado a estrutura da arvore: ('d' => deletar | 'm' => mostrar | 'p' => parar)");
+    scanf("%c", &treeValue);
+    getchar();
 
     return treeValue;
+}
+
+int readValueToDelete() {
+    int value;
+    
+    printf("Informe o valor a ser excluido: ");
+    scanf("%d", &value);
+    
+    return value;
 }
 
 void addNodeToRight(Tree *parentNode, Tree *childNode) {
@@ -69,36 +80,56 @@ void orderNode(Tree *rootNode, int treeValue) {
 
 }
 
-void deleteNodeWithDoubleChilds(Tree* selectedNode) {
-    Tree* backupNode = selectedNode;
-    Tree* backNode = selectedNode->backPointer;
+void deleteNodeWithTwoChilds(Tree* nodeToDelete) {
+    
+}
 
-    if (backNode->nextPointerLeft == selectedNode) {
-            backNode->nextPointerLeft = selectedNode->nextPointerLeft;
+void deleteNodeWithOneChild(Tree* nodeToDelete) {
+    Tree* parentNode = nodeToDelete->backPointer;
+    
+    if(nodeToDelete->nextPointerLeft) {
+        Tree* leftChild = nodeToDelete->nextPointerLeft;
+        
+        leftChild->backPointer = nodeToDelete->backPointer;
+        parentNode->nextPointerLeft = nodeToDelete->nextPointerLeft;
     } else {
-            return;
+        Tree* rightChild = nodeToDelete->nextPointerRight;
+        
+        rightChild->backPointer = nodeToDelete->backPointer;
+        parentNode->nextPointerRight = nodeToDelete->nextPointerRight;
     }
-	
+    
+    return;
 }
 
-void deleteNodeWithOneChild(Tree* selectedNode, char type) {
-    Tree* backNode = selectedNode->backPointer;
-
-    if (type == 'l') {
-            backNode->nextPointerLeft = selectedNode->nextPointerRight;
-    } else if (type == 'r') {
-            backNode->nextPointerRight = selectedNode->nextPointerRight;
+void checkNodeToDeleteType(Tree* nodeToDelete) {
+    
+    if (nodeToDelete->nextPointerLeft && nodeToDelete->nextPointerRight) {
+        deleteNodeWithTwoChilds(nodeToDelete);
+    } else {
+        deleteNodeWithOneChild(nodeToDelete);
     }
+    
+    return;    
 }
 
-void deleteNode(Tree* selectedNode) {
-    if (selectedNode->nextPointerLeft && selectedNode->nextPointerRight) {
-            deleteNodeWithDoubleChilds(selectedNode);
-    } else if (selectedNode->nextPointerLeft) {
-            deleteNodeWithOneChild(selectedNode, 'l');
-    } else if (selectedNode->nextPointerRight) {
-            deleteNodeWithOneChild(selectedNode, 'r');
+void findNodeToDelete(Tree* rootNode, int valueToDelete) {
+    
+    Tree* selectedNode = rootNode;
+    
+    while (true) {
+        
+        if (selectedNode->nodeValue == valueToDelete) {
+            checkNodeToDeleteType(selectedNode);
+        } else if (selectedNode->nodeValue > valueToDelete) {
+            selectedNode = selectedNode->nextPointerLeft;
+        } else {
+            selectedNode = selectedNode->nextPointerRight;
+        }
+        
     }
+    
+    return;
 }
 
 void showInsertedValues(Tree *mainNode) {
@@ -150,16 +181,23 @@ int main() {
 
     while (true) {
         int treeValue = readTreeValue();
-
-        if (treeValue == 0) {
-                break;
-        }
-
-        if (treeValue == 10000) {
+        int valueToDelete;
+        
+        switch (treeValue) {
+            case 'm':
                 showInsertedValues(rootNode);
+                break;
+            case 'd':
+                valueToDelete = readValueToDelete();
+                findNodeToDelete(rootNode, valueToDelete);
+                break;
+            case 'p':
+                system("pause");
+                return 0;
+            default:
+                int convertedReadedValue = treeValue - '0'; //Gambiarra do C para fazer parsing
+                orderNode(rootNode, convertedReadedValue);
         }
-
-        orderNode(rootNode, treeValue);
 
     }
 
