@@ -89,8 +89,27 @@ void orderNode(Tree *rootNode, int treeValue) {
 
 }
 
-void deleteNodeWithTwoChilds(Tree *nodeToDelete) {
+int getSmallestNodeValueAtRightAndRemoveIt(Tree *mainNode) {
+    Tree* selectedNode = mainNode->nextPointerRight;
     
+    while (true) {
+        
+        if(! selectedNode->nextPointerLeft) {
+            int smallestValue = selectedNode->nodeValue;
+            delete(selectedNode);
+            
+            return smallestValue;
+        } else {
+            selectedNode = selectedNode->nextPointerLeft;
+        }
+        
+    }
+}
+
+void deleteNodeWithTwoChilds(Tree *rootNode, Tree *nodeToDelete) {
+    int newNodeValue = getSmallestNodeValueAtRightAndRemoveIt(nodeToDelete);
+        
+    nodeToDelete->nodeValue = newNodeValue;
 }
 
 void deleteNodeWithOneChild(Tree *nodeToDelete) {
@@ -111,10 +130,10 @@ void deleteNodeWithOneChild(Tree *nodeToDelete) {
     return;
 }
 
-void checkNodeToDeleteType(Tree *nodeToDelete) {
+void checkNodeToDeleteType(Tree *rootNode, Tree *nodeToDelete) {
     
     if (nodeToDelete->nextPointerLeft && nodeToDelete->nextPointerRight) {
-        deleteNodeWithTwoChilds(nodeToDelete);
+        deleteNodeWithTwoChilds(rootNode, nodeToDelete);
     } else {
         deleteNodeWithOneChild(nodeToDelete);
     }
@@ -128,7 +147,7 @@ void findNodeToDelete(Tree *rootNode, int valueToDelete) {
     while (true) {
         
         if (selectedNode->nodeValue == valueToDelete) {
-            checkNodeToDeleteType(selectedNode);
+            checkNodeToDeleteType(rootNode, selectedNode);
             break;
         } else if (selectedNode->nodeValue > valueToDelete) {
             selectedNode = selectedNode->nextPointerLeft;
