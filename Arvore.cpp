@@ -106,6 +106,8 @@ int getSmallestNodeValueAtRightAndRemoveIt(Tree *mainNode) {
                 backNode->nextPointerLeft = selectedNode->nextPointerLeft;
             }
             
+            selectedNode->backPointer = backNode->backPointer;
+            
             return smallestValue;
         } else {
             selectedNode = selectedNode->nextPointerLeft;
