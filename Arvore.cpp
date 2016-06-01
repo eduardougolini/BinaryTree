@@ -130,11 +130,19 @@ void deleteNodeWithOneChild(Tree *nodeToDelete) {
         
         leftChild->backPointer = nodeToDelete->backPointer;
         parentNode->nextPointerLeft = nodeToDelete->nextPointerLeft;
-    } else {
+    } else if (nodeToDelete->nextPointerRight) {
         Tree* rightChild = nodeToDelete->nextPointerRight;
         
         rightChild->backPointer = nodeToDelete->backPointer;
         parentNode->nextPointerRight = nodeToDelete->nextPointerRight;
+    } else {
+        Tree* backNode = nodeToDelete->backPointer;
+        
+        if(backNode->nextPointerRight == nodeToDelete) {
+            backNode->nextPointerRight = NULL;
+        } else {
+            backNode->nextPointerLeft = NULL;
+        }
     }
     
     return;
