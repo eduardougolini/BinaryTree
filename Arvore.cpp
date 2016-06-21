@@ -1,36 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <fstream>
+
+#define vetor_size  8
 
 struct Tree {
     struct Tree *backPointer;
     int nodeValue;
+    int flare;
     struct Tree *nextPointerLeft;
     struct Tree *nextPointerRight;
 };
-
-int readRootValue() {
-    int root;
-
-    printf("Informe o numero da raiz: ");
-    scanf("%d", &root);
-
-    return root;
-}
-
-int readNodeValue() {
-    int node;
-
-    printf("Informe o numero do no: ");
-    scanf("%d", &node);
-
-    return node;
-}
 
 char readUserChoice() {
     char treeValue;
     
     getchar();//Limpa buffer do teclado
-    printf("Opcoes: 'i' => inserir | d' => deletar | 'm' => mostrar | 'p' => parar : ");
+    printf("Opcoes: d' => deletar | 'm' => mostrar | 'p' => parar | 'f' parar e salvar em pre ordem: ");
     scanf("%c", &treeValue);
     getchar();
 
@@ -220,20 +207,56 @@ void showInsertedValues(Tree *mainNode) {
     }
 }
 
+void read(int *vetor) {
+    std::ifstream file("inputValues.txt");
+
+    for (int i = 0; i < vetor_size; i++) {
+        file >> vetor[i];
+    }
+}
+
+void write(Tree *mainNode) {
+    std::ofstream file("outputValues.txt");
+    Tree* actualNode = mainNode;
+        
+    for (int i = 0; i < vetor_size; i++) {
+        file << actualNode->nodeValue;
+        file << " , ";
+        
+        actualNode->flare = true;
+        
+        if (actualNode->nextPointerLeft && actualNode->nextPointerLeft->flare != true) {
+           actualNode = actualNode->nextPointerLeft;
+        } else if(actualNode->nextPointerRight && actualNode->nextPointerRight->flare != true) {
+           actualNode = actualNode->nextPointerRight;
+        } else if(actualNode->backPointer->nextPointerRight && actualNode->backPointer->nextPointerRight->flare != true) {
+           actualNode = actualNode->backPointer->nextPointerRight;
+        }else {
+            actualNode = mainNode->nextPointerRight;
+        }
+    }
+
+    file.close();
+}
+
 int main() {
 	
+    int vetor[vetor_size];
+    read(vetor);
+    
     Tree* rootNode = new Tree();
-    rootNode->nodeValue = readRootValue();
+    rootNode->nodeValue = vetor[0];
+    
+    for (int i = 1; i < vetor_size; i++) {
+        int nodeValue = vetor[i];
+        orderNode(rootNode, nodeValue);
+    }
 
     while (true) {
         char choice = readUserChoice();
-        int nodeValue, valueToDelete;
+        int valueToDelete;
         
         switch (choice) {
-            case 'i':
-                nodeValue = readNodeValue();
-                orderNode(rootNode, nodeValue);
-                break;
             case 'm':
                 showInsertedValues(rootNode);
                 break;
@@ -242,6 +265,9 @@ int main() {
                 findNodeToDelete(rootNode, valueToDelete);
                 break;
             case 'p':
+                return 0;
+            case 'f':
+                write(rootNode);
                 return 0;
             default:
                 return 0;
